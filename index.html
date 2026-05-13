@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Bank Exam Quiz</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+}
+
+/* ========================= */
+/* TIMER AREA */
+/* ========================= */
+
+#timer-container{
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:#f4f6f9;
+    padding-bottom:10px;
+}
+
+#timer{
+    background:#222;
+    color:white;
+    padding:15px;
+    text-align:center;
+    font-size:22px;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+.timer-buttons{
+    text-align:center;
+}
+
+#pauseBtn,
+#resumeBtn{
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+    margin:5px;
+}
+
+#pauseBtn{
+    background:#ff9800;
+    color:white;
+}
+
+#resumeBtn{
+    background:#28a745;
+    color:white;
+}
+
+.question{
+    background:white;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.question h3{
+    margin-bottom:15px;
+}
+
+.option{
+    display:block;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ccc;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.option:hover{
+    background:#f0f0f0;
+}
+
+.selected{
+    background:#cfe2ff;
+    border:2px solid #0d6efd;
+}
+
+.mark-btn{
+    margin-top:10px;
+    padding:8px 15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#ff9800;
+    color:white;
+}
+
+.marked{
+    background:#ffcc80 !important;
+}
+
+.review-marked{
+    background:#e0e0e0 !important;
+    border:2px solid #9e9e9e;
+}
+
+.clear-btn{
+    margin-top:10px;
+    margin-left:10px;
+    padding:8px 15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#dc3545;
+    color:white;
+}
+
+.submit-btn{
+    width:100%;
+    padding:15px;
+    font-size:20px;
+    border:none;
+    border-radius:10px;
+    background:#28a745;
+    color:white;
+    cursor:pointer;
+    margin-top:20px;
+}
+
+.result-box{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    text-align:center;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.review-btn{
+    padding:12px 20px;
+    margin-top:20px;
+    border:none;
+    border-radius:10px;
+    background:#007bff;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+.review-question{
+    background:white;
+    padding:20px;
+    margin:20px 0;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.correct{
+    color:green;
+    font-weight:bold;
+}
+
+.wrong{
+    color:red;
+    font-weight:bold;
+}
+
+.unanswered{
+    color:orange;
+    font-weight:bold;
+}
+
+.correct-answer{
+    background:#d4edda;
+    padding:10px;
+    border-radius:8px;
+    margin-top:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Bank Exam MCQ Quiz</h1>
+
+<!-- ========================= -->
+<!-- TIMER -->
+<!-- ========================= -->
+
+<div id="timer-container">
+
+    <div id="timer">
+        Time Left: 15:00
+    </div>
+
+    <div class="timer-buttons">
+
+        <button id="pauseBtn" onclick="pauseTimer()">
+            Pause
+        </button>
+
+        <button id="resumeBtn" onclick="resumeTimer()" disabled>
+            Resume
+        </button>
+
+    </div>
+
+</div>
+
+<div id="quiz"></div>
+
+<button class="submit-btn" onclick="submitQuiz()">
+Submit Quiz
+</button>
+
+</div>
+
+<script>
+
+// ===============================
+// QUESTIONS AREA
+// ===============================
+
+const questions = [
+
+{q:"Prime Minister Narendra Modi visited Karnataka and Telangana on 10 May 2026 to participate in events related to spiritual outreach and infrastructure development. During the Telangana visit, which flagship textile initiative was inaugurated in Warangal?", options:["National Textile Investment and Manufacturing Zone (NTIMZ)","Pradhan Mantri Mega Integrated Textile Region and Apparel (PM MITRA) Park","Integrated Apparel Export Promotion Park (IAEPP)","National Mega Textile Cluster Mission (NMTCM)","Bharat Integrated Garment Region Scheme (BIGRS)"], answer:1},
+
+{q:"During Prime Minister Narendra Modi’s visit to Karnataka on 10 May 2026, he participated in the 45th anniversary celebrations of which spiritual organisation and inaugurated the Dhyan Mandir at its International Centre in Bengaluru?", options:["Isha Foundation","Chinmaya Mission","The Art of Living","Brahma Kumaris","Ramakrishna Mission"], answer:2},
+
+{q:"Prime Minister Narendra Modi laid the foundation stone for the four-laning of a section of National Highway-167 (NH-167) during his Telangana visit. Which stretch was included under this project?", options:["Hyderabad to Nalgonda","Gudebellur to Mahabubnagar","Karimnagar to Warangal","Nizamabad to Adilabad","Khammam to Suryapet"], answer:1},
+
+{q:"The All India Football Federation (AIFF) and the Department of Sports and Youth Services (DSYS), Government of Odisha renewed a five-year Memorandum of Understanding (MoU) to strengthen elite youth football development. AIFF was originally established in which year?", options:["1929","1937","1948","1951","1960"], answer:1},
+
+{q:"Which officials signed the renewed five-year MoU between AIFF and the Department of Sports and Youth Services (DSYS), Government of Odisha?", options:["Kalyan Chaubey and Naveen Patnaik","Vijay Yeddula and M. Satyanarayan","M. Satyanarayan and Prabir Sen","Vijay Yeddula and Sandip Pradhan","Kalyan Chaubey and Vijay Yeddula"], answer:1},
+
+{q:"India handed over the banner of the Inter-University Centre for Astronomy and Astrophysics (IUCAA) to the South African Astronomical Observatory (SAAO) during a ceremony held in which city?", options:["Johannesburg","Pretoria","Durban","Cape Town","Port Elizabeth"], answer:3},
+
+{q:"The IUCAA banner handed over to the South African Astronomical Observatory (SAAO) will be displayed at which major scientific facility?", options:["MeerKAT Observatory","African Space Research Centre","Southern African Large Telescope (SALT)","Karoo Array Telescope Facility","Pan-African Astronomy Centre"], answer:2},
+
+{q:"The Reserve Bank of India (RBI) signed a Memorandum of Understanding (MoU) with the European Central Bank (ECB) to enhance cooperation in central banking. Who signed the agreement on behalf of the ECB?", options:["Christine Lagarde","Ursula von der Leyen","Klaas Knot","Joachim Nagel","Philip Lane"], answer:0},
+
+{q:"The European Central Bank (ECB), which recently signed an MoU with the Reserve Bank of India (RBI), was established in which year?", options:["1975","1988","1993","1998","2002"], answer:1},
+
+{q:"Delhi Metro Rail Corporation (DMRC) partnered with Airtel Payments Bank to launch co-branded RuPay ‘On-The-Go’ National Common Mobility Cards (NCMC). The initiative supports which Government of India vision?", options:["Digital Bharat Transit Mission","One Nation, One Mobility Grid","One Nation, One Card","Smart Payments for India Mission","Unified Transit Access Programme"], answer:2},
+
+{q:"The RuPay ‘On-The-Go’ National Common Mobility Cards launched by DMRC and Airtel Payments Bank are available in which forms?", options:["Credit Cards and Smart Transit Tokens","Debit Cards and PPI-MTS Cards","Transit Passes and Forex Cards","Metro Wallet Cards and FASTag Cards","QR Mobility Cards and Transit Coupons"], answer:1},
+
+{q:"Airtel Payments Bank, which partnered with DMRC for RuPay ‘On-The-Go’ cards, commenced operations in which year?", options:["2015","2016","2017","2018","2019"], answer:2},
+
+{q:"According to the latest Ecowrap Research report released by the State Bank of India (SBI), India’s real Gross Domestic Product (GDP) growth for the fourth quarter of FY26 is projected at nearly:", options:["5.8%","6.3%","6.8%","7.2%","7.9%"], answer:3},
+
+{q:"SBI Ecowrap projected India’s real GDP growth rate for the full Financial Year 2025-26 (FY26) at:", options:["6.1%","6.6%","7.0%","7.5%","8.0%"], answer:3},
+
+{q:"As per SBI Ecowrap Research, India’s real GDP growth for FY27 is estimated at:", options:["5.9%","6.2%","6.6%","7.1%","7.4%"], answer:2},
+
+{q:"The Ministry of Panchayati Raj (MoPR) announced the winners of National Panchayat Awards 2025 (NPA-2025). Which state topped the awards tally?", options:["Odisha","Andhra Pradesh","Maharashtra","Karnataka","Uttar Pradesh"], answer:3},
+
+{q:"Under the National Panchayat Awards 2025, how many Gram Panchayats were selected for the Deen Dayal Upadhyay Panchayat Satat Vikas Puraskar (DDUPSVP)?", options:["22","28","34","40","42"], answer:2},
+
+{q:"Which Gram Panchayat from Assam received India’s Best Gram Panchayat award under the Nanaji Deshmukh Sarvottam Panchayat Satat Vikas Puraskar (NDSPSVP) 2025?", options:["Majuli Gaon Panchayat","Barpeta Rural Panchayat","New Napam Gaon Panchayat","Sonitpur Village Council","Dhemaji Gram Parishad"], answer:2},
+
+{q:"Suvendu Adhikari became the 9th Chief Minister of West Bengal and the first leader from which political party to hold the post in the state?", options:["Communist Party of India (Marxist)","Indian National Congress","Bharatiya Janata Party (BJP)","Trinamool Congress (TMC)","Janata Dal (United)"], answer:2},
+
+{q:"The oath of office to Suvendu Adhikari as Chief Minister of West Bengal was administered by whom?", options:["C.V. Ananda Bose","Jagdeep Dhankhar","Ravindra Narayana Ravi","Keshari Nath Tripathi","La. Ganesan"], answer:2},
+
+{q:"C. Joseph Vijay, founder of Tamilaga Vettri Kazhagam (TVK), took oath as the 13th Chief Minister of Tamil Nadu. Which constituency did he represent?", options:["Kolathur","Chepauk-Thiruvallikeni","T. Nagar","Perambur","Madurai Central"], answer:3},
+
+{q:"The oath-taking ceremony of Tamil Nadu Chief Minister C. Joseph Vijay was held at which venue in Chennai?", options:["Kalaivanar Arangam","YMCA Grounds","Jawaharlal Nehru Indoor Stadium","Rajaji Hall","Island Grounds"], answer:2},
+
+{q:"Steel Authority of India Limited (SAIL) appointed Ashok Kumar Panda as its new Chairman and Managing Director (CMD). He succeeded whom in the position?", options:["Soma Mondal","Amarendu Prakash","Krishna Kumar Singh","Anil Kumar Chaudhary","Bhaskar Chatterjee"], answer:2},
+
+{q:"Steel Authority of India Limited (SAIL), which recently appointed a new CMD, was established in which year?", options:["1954","1965","1973","1981","1992"], answer:2},
+
+{q:"DRDO successfully conducted a long-duration test of an Actively Cooled Full-Scale Scramjet Combustor at the Scramjet Connect Pipe Test (SCPT) Facility located in:", options:["Bengaluru, Karnataka","Pune, Maharashtra","Hyderabad, Telangana","Balasore, Odisha","Chennai, Tamil Nadu"], answer:2},
+
+{q:"The Defence Research and Development Organisation (DRDO) achieved a successful scramjet combustor test lasting for more than:", options:["300 seconds","600 seconds","900 seconds","1,200 seconds","1,500 seconds"], answer:3},
+
+{q:"India successfully conducted the flight trial of which missile from Dr APJ Abdul Kalam Island, Odisha?", options:["Prithvi-II","Akash Prime","Agni missile","BrahMos Block-IV","Astra Mk-II"], answer:2},
+
+{q:"The Defence Research and Development Organisation (DRDO), which recently conducted the scramjet combustor test, was established in which year?", options:["1948","1952","1958","1962","1971"], answer:2},
+
+{q:"The 20th edition of the Shanghai Hyundai Archery World Cup Stage 2 was held in which country?", options:["Japan","South Korea","Vietnam","China","Thailand"], answer:3},
+
+{q:"At the Shanghai Hyundai Archery World Cup Stage 2, India won a gold medal in which category?", options:["Men’s Compound Team","Women’s Recurve Team","Mixed Team Compound","Men’s Recurve Individual","Women’s Compound Individual"], answer:1},
+
+{q:"Which country topped the medal tally at the Shanghai Hyundai Archery World Cup Stage 2 with six medals?", options:["China","South Korea","India","Türkiye","Mexico"], answer:3},
+
+{q:"Sahil Jadhav won a bronze medal for India at the Shanghai Hyundai Archery World Cup Stage 2 in which event?", options:["Men’s Recurve Team","Mixed Team Recurve","Men’s Individual Compound","Men’s Team Compound","Men’s Individual Recurve"], answer:2},
+
+{q:"Former World No. 2 tennis player Mal Anderson, who recently passed away, belonged to which country?", options:["United Kingdom","United States of America","Australia","New Zealand","South Africa"], answer:2},
+
+{q:"Mal Anderson became the first unseeded player to win the United States National Championships men’s singles title in which year?", options:["1952","1957","1961","1968","1972"], answer:1},
+
+{q:"Union Minister Amit Shah released the books “The Bench, the Bar, and the Bizarre” and “The Lawful and the Awful” authored by whom?", options:["Harish Salve","Mukul Rohatgi","Tushar Mehta","Kapil Sibal","Gopal Sankaranarayanan"], answer:2},
+
+{q:"The books “The Bench, the Bar, and the Bizarre” and “The Lawful and the Awful” were published by which publishing house?", options:["Penguin Random House India","HarperCollins India","Aleph Book Company","Rupa Publications India","Westland Publications"], answer:3},
+
+{q:"World Migratory Bird Day (WMBD) 2026 was observed on which dates?", options:["1 May and 1 October 2026","9 May and 10 October 2026","8 May and 9 October 2026","10 May and 11 October 2026","12 May and 14 October 2026"], answer:1},
+
+{q:"World Migratory Bird Day (WMBD) was first observed globally in the year:", options:["1993","1998","2001","2006","2010"], answer:3},
+
+{q:"The International Day of Argania is observed every year on:", options:["22 April","5 June","10 May","15 May","21 June"], answer:2},
+
+{q:"The International Day of Argania aims to raise awareness about the Argan tree (Argania spinosa), which is native to:", options:["Algeria","Tunisia","Egypt","Morocco","Libya"], answer:3}
+];
+
+// ===============================
+// VARIABLES
+// ===============================
+
+let userAnswers = new Array(questions.length).fill(null);
+
+let markedForReview = new Array(questions.length).fill(false);
+
+let submitted = false;
+
+// ===============================
+// LOAD QUIZ
+// ===============================
+
+function loadQuiz(){
+
+    const quizDiv = document.getElementById("quiz");
+
+    questions.forEach((question,index)=>{
+
+        const qDiv = document.createElement("div");
+
+        qDiv.classList.add("question");
+
+        qDiv.id = `question_${index}`;
+
+        qDiv.innerHTML = `
+        <h3>Q${index+1}. ${question.q}</h3>
+        `;
+
+        question.options.forEach((option,optIndex)=>{
+
+            const opt = document.createElement("div");
+
+            opt.classList.add("option");
+
+            opt.innerText = option;
+
+            opt.onclick = ()=>selectOption(index,optIndex,opt);
+
+            opt.id = `q${index}_opt${optIndex}`;
+
+            qDiv.appendChild(opt);
+
+        });
+
+        // MARK BUTTON
+
+        const markBtn = document.createElement("button");
+
+        markBtn.innerText = "Mark For Review";
+
+        markBtn.classList.add("mark-btn");
+
+        markBtn.onclick = ()=>toggleMark(index,markBtn);
+
+        qDiv.appendChild(markBtn);
+
+        // CLEAR BUTTON
+
+        const clearBtn = document.createElement("button");
+
+        clearBtn.innerText = "Clear";
+
+        clearBtn.classList.add("clear-btn");
+
+        clearBtn.onclick = ()=>clearAnswer(index);
+
+        qDiv.appendChild(clearBtn);
+
+        quizDiv.appendChild(qDiv);
+
+    });
+
+}
+
+// ===============================
+// SELECT OPTION
+// ===============================
+
+function selectOption(qIndex,optIndex,element){
+
+    if(submitted) return;
+
+    userAnswers[qIndex] = optIndex;
+
+    const options = document.querySelectorAll(`[id^="q${qIndex}_opt"]`);
+
+    options.forEach(opt=>{
+        opt.classList.remove("selected");
+    });
+
+    element.classList.add("selected");
+
+}
+
+// ===============================
+// MARK FOR REVIEW
+// ===============================
+
+function toggleMark(index,button){
+
+    markedForReview[index] = !markedForReview[index];
+
+    const questionBox = document.getElementById(`question_${index}`);
+
+    if(markedForReview[index]){
+
+        button.classList.add("marked");
+
+        button.innerText = "Marked For Review";
+
+        questionBox.classList.add("review-marked");
+
+    }else{
+
+        button.classList.remove("marked");
+
+        button.innerText = "Mark For Review";
+
+        questionBox.classList.remove("review-marked");
+
+    }
+
+}
+
+// ===============================
+// CLEAR ANSWER
+// ===============================
+
+function clearAnswer(index){
+
+    if(submitted) return;
+
+    userAnswers[index] = null;
+
+    const options = document.querySelectorAll(`[id^="q${index}_opt"]`);
+
+    options.forEach(opt=>{
+        opt.classList.remove("selected");
+    });
+
+}
+
+// ===============================
+// SUBMIT QUIZ
+// ===============================
+
+function submitQuiz(){
+
+    if(submitted) return;
+
+    submitted = true;
+
+    clearInterval(timer);
+
+    let score = 0;
+
+    let correctCount = 0;
+    let wrongCount = 0;
+    let unansweredCount = 0;
+
+    questions.forEach((question,index)=>{
+
+        const userAns = userAnswers[index];
+
+        if(userAns === null){
+
+            unansweredCount++;
+
+        }
+        else if(userAns === question.answer){
+
+            score += 1;
+            correctCount++;
+
+        }
+        else{
+
+            score -= 0.25;
+            wrongCount++;
+
+        }
+
+    });
+
+    let attempted = correctCount + wrongCount;
+
+    let accuracy = attempted > 0
+    ? ((correctCount/attempted)*100).toFixed(2)
+    : 0;
+
+    document.body.innerHTML = `
+
+    <div class="container">
+
+        <div class="result-box">
+
+            <h1>Quiz Submitted ✅</h1>
+
+            <h2>Total Score: ${score.toFixed(2)}</h2>
+
+            <h3>Correct Answers: ${correctCount}</h3>
+
+            <h3>Wrong Answers: ${wrongCount}</h3>
+
+            <h3>Unanswered Questions: ${unansweredCount}</h3>
+
+            <h3>Accuracy: ${accuracy}%</h3>
+
+            <button class="review-btn" onclick="reviewAnswers()">
+            Review Answers
+            </button>
+
+            <div id="reviewSection"></div>
+
+        </div>
+
+    </div>
+
+    `;
+
+}
+
+// ===============================
+// REVIEW ANSWERS
+// ===============================
+
+function reviewAnswers(){
+
+    const reviewSection = document.getElementById("reviewSection");
+
+    let html = `<h1 style="margin-top:40px;">Review Section</h1>`;
+
+    questions.forEach((question,index)=>{
+
+        const userAns = userAnswers[index];
+
+        let status = "";
+        let marks = "";
+
+        if(userAns === null){
+
+            status = `<span class="unanswered">Unanswered</span>`;
+            marks = `0 Marks`;
+
+        }
+        else if(userAns === question.answer){
+
+            status = `<span class="correct">Correct ✅</span>`;
+            marks = `+1 Mark`;
+
+        }
+        else{
+
+            status = `<span class="wrong">Wrong ❌</span>`;
+            marks = `-0.25 Mark`;
+
+        }
+
+        html += `
+
+        <div class="review-question">
+
+            <h3>Q${index+1}. ${question.q}</h3>
+
+            <p>${status}</p>
+
+            <p><b>Marks:</b> ${marks}</p>
+
+            <p>
+            <b>Your Answer:</b>
+            ${
+                userAns === null
+                ? "Not Attempted"
+                : question.options[userAns]
+            }
+            </p>
+
+            <div class="correct-answer">
+            <b>Correct Answer:</b>
+            ${question.options[question.answer]}
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    reviewSection.innerHTML = html;
+
+}
+
+// ===============================
+// TIMER
+// ===============================
+
+let time = 900;
+
+let timer;
+
+let isPaused = false;
+
+function startTimer(){
+
+    timer = setInterval(()=>{
+
+        if(!isPaused){
+
+            let minutes = Math.floor(time/60);
+
+            let seconds = time%60;
+
+            document.getElementById("timer").innerText =
+            `Time Left: ${minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+
+            time--;
+
+            if(time < 0){
+
+                clearInterval(timer);
+
+                alert("Time is up! Quiz auto-submitted.");
+
+                submitQuiz();
+
+            }
+
+        }
+
+    },1000);
+
+}
+
+// ===============================
+// PAUSE TIMER
+// ===============================
+
+function pauseTimer(){
+
+    if(submitted) return;
+
+    isPaused = true;
+
+    document.getElementById("pauseBtn").disabled = true;
+
+    document.getElementById("resumeBtn").disabled = false;
+
+}
+
+// ===============================
+// RESUME TIMER
+// ===============================
+
+function resumeTimer(){
+
+    if(submitted) return;
+
+    isPaused = false;
+
+    document.getElementById("pauseBtn").disabled = false;
+
+    document.getElementById("resumeBtn").disabled = true;
+
+}
+
+// ===============================
+
+loadQuiz();
+
+startTimer();
+
+</script>
+
+</body>
+</html>
